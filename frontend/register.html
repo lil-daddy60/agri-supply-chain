@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - AgriSupply</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card fade-in" style="max-width: 560px;">
+      <div class="auth-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 20h10"/>
+          <path d="M10 20c5.5-2.5.8-6.4 3-10"/>
+          <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/>
+          <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.2 3.3-.6 4.3-1.4 1-1 1.6-2.4 1.6-4.6-2.7.2-4 .8-4.8 2z"/>
+        </svg>
+      </div>
+      <h1 class="auth-title">Create Account</h1>
+      <p class="auth-subtitle">Join the agriculture supply chain</p>
+
+      <div id="errorAlert" class="alert alert-error hidden"></div>
+
+      <!-- Step Indicator -->
+      <div class="step-indicator">
+        <div class="step active" id="step1Indicator">1</div>
+        <div class="step-line" id="stepLine"></div>
+        <div class="step" id="step2Indicator">2</div>
+      </div>
+
+      <form id="registerForm" class="auth-form">
+        <!-- Step 1: Basic Info -->
+        <div id="step1">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" class="input-field" placeholder="John" required>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" class="input-field" placeholder="Doe" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" class="input-field" placeholder="john@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" class="input-field" placeholder="Min 6 characters" required minlength="6">
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="input-field" placeholder="+1 234 567 890">
+          </div>
+
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role" class="input-field" onchange="updateProfileFields()">
+              <option value="FARMER">Farmer</option>
+              <option value="INPUT_SUPPLIER">Input Supplier</option>
+              <option value="LOGISTICS_PROVIDER">Logistics Provider</option>
+              <option value="BUYER_PROCESSOR">Buyer / Processor</option>
+              <option value="GOVERNMENT">Government Department</option>
+              <option value="FINANCIAL_INSTITUTION">Financial Institution</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="goToStep(2)">
+            Next: Profile Details
+          </button>
+        </div>
+
+        <!-- Step 2: Profile Details -->
+        <div id="step2" class="hidden">
+          <div id="profileFields"></div>
+
+          <div class="flex gap-3" style="margin-top: 1rem;">
+            <button type="button" class="btn btn-secondary flex-1" onclick="goToStep(1)">Back</button>
+            <button type="submit" id="registerBtn" class="btn btn-primary flex-1">
+              <span id="btnText">Create Account</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account? <a href="index.html">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    if (Auth.redirectIfAuth()) {}
+
+    const profileTemplates = {
+      FARMER: `
+        <h3 style="font-weight:600; margin-bottom:1rem; color:var(--gray-900);">Farm Profile</h3>
+        <div class="form-group"><label>Farm Name</label><input type="text" id="farmName" class="input-field" placeholder="Green Valley Farm" required></div>
+        <div class="form-group"><label>Farm Location</label><input type="text" id="farmLocation" class="input-field" placeholder="City, State" required></div>
+        <div class="form-group"><label>Farm Size (acres)</label><input type="number" id="farmSize" class="input-field" placeholder="10"></div>
+        <div class="form-group"><label>Primary Crops (comma separated)</label><input type="text" id="primaryCrops" class="input-field" placeholder="Rice, Wheat, Corn"></div>
+      `,
+      INPUT_SUPPLIER: `
+        <h3 style="font-weight:600; margin-bottom:1rem; color:var(--gray-900);">Business Profile</h3>
+        <div class="form-group"><label>Company Name</label><input type="text" id="companyName" class="input-field" placeholder="AgriInputs Ltd" required></div>
+        <div class="form-group"><label>Business Type</label><input type="text" id="businessType" class="input-field" placeholder="Seeds, Fertilizers" required></div>
+        <div class="form-group"><label>Location</label><input type="text" id="location" class="input-field" placeholder="City, State" required></div>
+      `,
+      LOGISTICS_PROVIDER: `
+        <h3 style="font-weight:600; margin-bottom:1rem; color:var(--gray-900);">Company Profile</h3>
+        <div class="form-group"><label>Company Name</label><input type="text" id="companyName" class="input-field" placeholder="FastTrack Logistics" required></div>
+        <div class="form-group"><label>Coverage Areas (comma separated)</label><input type="text" id="coverageArea" class="input-field" placeholder="North, South, Central"></div>
+      `,
+      BUYER_PROCESSOR: `
+        <h3 style="font-weight:600; margin-bottom:1rem; color:var(--gray-900);">Business Profile</h3>
+        <div class="form-group"><label>Company Name</label><input type="text" id="companyName" class="input-field" placeholder="FreshFoods Inc" required></div>
+        <div class="form-group"><label>Business Type</label><input type="text" id="businessType" class="input-field" placeholder="Food Processor" required></div>
+        <div class="form-group"><label>Location</label><input type="text" id="location" class="input-field" placeholder="City, State" required></div>
+      `,
+      GOVERNMENT: `
+        <h3 style="font-weight:600; margin-bottom:1rem; color:var(--gray-900);">Organization Profile</h3>
+        <div class="form-group"><label>Department</label><input type="text" id="department" class="input-field" placeholder="Agriculture Department" required></div>
+        <div class="form-group"><label>Jurisdiction</label><input type="text" id="jurisdiction" class="input-field" placeholder="State Level" required></div>
+      `,
+      FINANCIAL_INSTITUTION: `
+        <h3 style="font-weight:600; margin-bottom:1rem; color:var(--gray-900);">Institution Profile</h3>
+        <div class="form-group"><label>Institution Name</label><input type="text" id="institutionName" class="input-field" placeholder="AgriBank" required></div>
+        <div class="form-group"><label>Institution Type</label><input type="text" id="institutionType" class="input-field" placeholder="Bank / Insurance" required></div>
+      `
+    };
+
+    function updateProfileFields() {
+      const role = document.getElementById('role').value;
+      document.getElementById('profileFields').innerHTML = profileTemplates[role] || '';
+    }
+
+    function goToStep(step) {
+      if (step === 2) {
+        // Validate step 1
+        const required = ['firstName', 'lastName', 'email', 'password'];
+        for (const id of required) {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) {
+            el.focus();
+            return;
+          }
+        }
+      }
+
+      document.getElementById('step1').classList.toggle('hidden', step !== 1);
+      document.getElementById('step2').classList.toggle('hidden', step !== 2);
+      document.getElementById('step1Indicator').classList.toggle('active', step >= 1);
+      document.getElementById('step2Indicator').classList.toggle('active', step >= 2);
+      document.getElementById('stepLine').classList.toggle('active', step >= 2);
+    }
+
+    // Initialize profile fields
+    updateProfileFields();
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorAlert = document.getElementById('errorAlert');
+      errorAlert.classList.add('hidden');
+      
+      const btn = document.getElementById('registerBtn');
+      const btnText = document.getElementById('btnText');
+      btn.disabled = true;
+      btnText.textContent = 'Creating Account...';
+
+      const role = document.getElementById('role').value;
+      const profile = {};
+
+      // Collect profile fields based on role
+      const profileFields = document.querySelectorAll('#profileFields input');
+      profileFields.forEach(field => {
+        if (field.id === 'primaryCrops' || field.id === 'coverageArea') {
+          profile[field.id] = field.value.split(',').map(s => s.trim()).filter(Boolean);
+        } else if (field.id === 'farmSize') {
+          profile[field.id] = field.value ? parseFloat(field.value) : null;
+        } else {
+          profile[field.id] = field.value;
+        }
+      });
+
+      const userData = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        phone: document.getElementById('phone').value,
+        role: role,
+        profile: profile
+      };
+
+      try {
+        await Auth.register(userData);
+        window.location.href = 'dashboard.html';
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('hidden');
+        btn.disabled = false;
+        btnText.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>
