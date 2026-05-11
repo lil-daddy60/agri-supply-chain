@@ -1,6 +1,4 @@
 
-const API_URL = 'https://agri-supply-api.onrender.com/api';
-
 async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('token');
   
