@@ -1,5 +1,5 @@
 // ===== AUTHENTICATION STATE =====
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://agri-supply-api.onrender.com/api';
 
 var currentUser = null;
 let authToken = localStorage.getItem('token');
